@@ -5,18 +5,11 @@ import 'package:lazy_account/view/router/router_helper.dart';
 
 /// 注册页
 class SignUpPage extends StatefulWidget {
-  static const COUNT_DOWN_TIME = 3;
-
-  final String title;
-
-  SignUpPage({Key key, this.title}) : super(key: key);
-
   @override
   _SignUpPageState createState() => _SignUpPageState();
 }
 
 class _SignUpPageState extends State<SignUpPage> {
-  int count = SignUpPage.COUNT_DOWN_TIME;
 
   /// 跳转登录页面
   void _navigationLoginPage() {
