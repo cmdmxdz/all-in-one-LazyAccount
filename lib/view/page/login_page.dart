@@ -210,7 +210,11 @@ class _LoginPageState extends State<LoginPage> {
             style: TextStyle(fontSize: 14.0, color: Colors.grey),
           ),
           onPressed: () {
-            Navigator.pop(context);
+            Fluttertoast.showToast(
+              //必填
+              msg: '忘记密码-请重置',
+              toastLength: Toast.LENGTH_SHORT,
+            );
           },
         ),
       ),
