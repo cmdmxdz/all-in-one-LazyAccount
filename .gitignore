@@ -45,3 +45,6 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 /pubspec.lock
+
+# Other add 20210529
+/test/
