@@ -124,18 +124,21 @@ class _LoginPageState extends State<LoginPage> {
           .map((item) => Builder(
                 builder: (context) {
                   return IconButton(
-                      icon: Icon(item['icon'],
-                          color: Theme.of(context).iconTheme.color),
-                      onPressed: () {
-                        //TODO : 第三方登录方法
-                        Scaffold.of(context).showSnackBar(new SnackBar(
+                    icon: Icon(item['icon'],
+                        color: Theme.of(context).iconTheme.color),
+                    onPressed: () {
+                      //TODO : 第三方登录方法
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        new SnackBar(
                           content: new Text("${item['title']}登录"),
                           action: new SnackBarAction(
                             label: "取消",
                             onPressed: () {},
                           ),
-                        ));
-                      });
+                        ),
+                      );
+                    },
+                  );
                 },
               ))
           .toList(),
@@ -230,6 +233,7 @@ class _LoginPageState extends State<LoginPage> {
         if (value.isEmpty) {
           return '请输入密码';
         }
+        return null;
       },
       decoration: InputDecoration(
           labelText: 'Password',
@@ -262,6 +266,7 @@ class _LoginPageState extends State<LoginPage> {
         if (!emailReg.hasMatch(value)) {
           return '请输入正确的邮箱地址';
         }
+        return null;
       },
       onSaved: (String value) => _email = value,
     );
