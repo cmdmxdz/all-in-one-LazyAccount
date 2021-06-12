@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lazy_account/model/personal_user_info.dart';
@@ -15,14 +17,35 @@ class PersonalPage extends StatefulWidget {
 }
 
 class _PersonalPageState extends State<PersonalPage> {
-  var currentPage;
-
+  /// 设置-卡片列表
   var cardList = <UserInfo>[];
+
+  /// 用户名称
+  var userName = "user_";
+
+  /// vip等级
+  var vipLevel = "vip: ";
+
+  /// 提醒-标题
+  var alarmTitle = "提醒";
+
+  /// 提醒-内容
+  var alarmContent = "振动提醒";
+
+  /// 设置-标题
+  var settingTitle = "其他设置";
+
+  /// 设置
+  var settingContent = "";
+
+  /// 帮助中心
+  var helpCenter = "帮助中心";
 
   @override
   void initState() {
     super.initState();
-    currentPage = PersonalPage.RECORD_PAGE;
+    userName = userName + Random().nextInt(10000).toString();
+    vipLevel = vipLevel + Random().nextInt(6).toString();
   }
 
   @override
@@ -30,20 +53,27 @@ class _PersonalPageState extends State<PersonalPage> {
     super.dispose();
   }
 
+  /// 初始化数据
   void _initData() {
     if (cardList.isNotEmpty) {
       cardList.clear();
     }
-    cardList.add(
-        UserInfo(0, 0, "images/default_avatar.png", "name1", "infoContent1"));
-    cardList.add(
-        UserInfo(0, 1, "images/default_avatar.png", "name2", "infoContent2"));
-    cardList.add(
-        UserInfo(1, 0, "images/default_avatar.png", "name3", "infoContent3"));
-    cardList.add(
-        UserInfo(1, 1, "images/default_avatar.png", "name4", "infoContent4"));
-    cardList.add(
-        UserInfo(2, 0, "images/default_avatar.png", "name5", "infoContent5"));
+    cardList.add(UserInfo(
+        index: 0,
+        iconPath: "images/icon_alarm.png",
+        name: alarmTitle,
+        infoContent: alarmContent));
+    cardList.add(UserInfo(
+      index: 1,
+      iconPath: "images/icon_setting.png",
+      name: settingTitle,
+    ));
+
+    cardList.add(UserInfo(
+      index: 3,
+      iconPath: "images/icon_help.png",
+      name: helpCenter,
+    ));
   }
 
   @override
@@ -60,17 +90,38 @@ class _PersonalPageState extends State<PersonalPage> {
               ),
               Container(
                 margin:
-                    EdgeInsets.only(top: 50, left: 50, right: 50, bottom: 30),
+                    EdgeInsets.only(top: 50, left: 30, right: 30, bottom: 30),
                 color: Colors.transparent,
                 child: Card(
                   child: Row(
                     children: [
                       Container(
-                        margin: EdgeInsets.only(left: 50, right: 50),
-                        child: headerWidget,
+                        margin: EdgeInsets.only(left: 20),
+                        child: _getHeaderWidget(),
                       ),
                       Container(
-                        child: Text("name"),
+                        alignment: Alignment.center,
+                        margin: EdgeInsets.only(left: 20),
+                        child: Text(
+                          userName,
+                          style: TextStyle(
+                            fontSize: 22,
+                            color: Colors.orangeAccent,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                      Expanded(child: Container()),
+                      Container(
+                        margin: EdgeInsets.only(right: 20, bottom: 70),
+                        child: Text(
+                          vipLevel,
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.orangeAccent,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -79,22 +130,19 @@ class _PersonalPageState extends State<PersonalPage> {
             ],
           ),
           Container(
-            // margin: EdgeInsets.only(
-            //   left: 20,
-            //   right: 20,
-            // ),
-            child: GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 15,
-                    mainAxisSpacing: 15,
-                    childAspectRatio: 1),
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                itemBuilder: (BuildContext context, int index) {
-                  return _getCardWidget(index, cardList[index]);
-                },
-                itemCount: cardList?.length ?? 0),
+            child: ListView.separated(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              itemBuilder: (BuildContext context, int index) {
+                return _getCardWidget(index, cardList[index]);
+              },
+              itemCount: cardList?.length ?? 0,
+              separatorBuilder: (BuildContext context, int index) {
+                return Container(
+                  height: 20,
+                );
+              },
+            ),
           ),
           Container(
             height: 30,
@@ -104,101 +152,52 @@ class _PersonalPageState extends State<PersonalPage> {
     );
   }
 
-  Widget headerWidget = Container(
-    height: 150,
-//    color: Colors.yellow[600],
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
-        Container(
-          width: 84,
-          height: 84,
-          decoration: BoxDecoration(
-              border: Border.all(color: Colors.yellow[800], width: 1),
-              borderRadius: BorderRadius.circular(42)),
-          child: ClipOval(
-            child: Image.asset(
-              'images/default_avatar.png',
-              width: 83,
-              height: 83,
-              fit: BoxFit.cover,
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 15.0),
-          child: Text(
-            'Bliss',
-            style: TextStyle(
-                fontSize: 18.0,
-                color: Color(0x824E00),
-                fontWeight: FontWeight.w500),
-          ),
-        )
-      ],
-    ),
-  );
-
-  Widget cardWidget = Card(
-    child: Container(
-      width: 345,
-      height: 150,
-      color: Colors.yellow[600],
+  /// 标题
+  Widget _getHeaderWidget() {
+    return Container(
+      height: 120,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           Container(
-            width: 84,
-            height: 84,
+            width: 60,
+            height: 60,
             decoration: BoxDecoration(
                 border: Border.all(color: Colors.yellow[800], width: 1),
                 borderRadius: BorderRadius.circular(42)),
             child: ClipOval(
               child: Image.asset(
                 'images/default_avatar.png',
-                width: 83,
-                height: 83,
+                width: 40,
+                height: 40,
                 fit: BoxFit.cover,
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.only(top: 15.0),
-            child: Text(
-              'Bliss',
-              style: TextStyle(
-                  fontSize: 18.0,
-                  color: Color(0x824E00),
-                  fontWeight: FontWeight.w500),
-            ),
-          )
         ],
       ),
-    ),
-  );
+    );
+  }
 
+  /// 设置卡片
   Widget _getCardWidget(int index, UserInfo userInfo) {
     return _getShadowWidget(
-        null,
-        null,
-        index == cardList.length - 1 ? 30.0 : 0.0,
-        userInfo.y == 0 ? 30.0 : 0.0,
-        userInfo.y == 1 ? 30.0 : 0.0,
-        Container(
-          // color: Colors.yellow[600],
-          padding: EdgeInsets.only(top: 15.0, left: 15.0),
-          child: Column(
+      70.0,
+      null,
+      index == cardList.length - 1 ? 30.0 : 0.0,
+      30.0,
+      30.0,
+      InkWell(
+        child: Container(
+          padding: EdgeInsets.only(left: 15.0),
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               Container(
                 width: 24,
                 height: 24,
-                decoration: BoxDecoration(
-                    border: Border.all(color: Colors.yellow[800], width: 1),
-                    borderRadius: BorderRadius.circular(42)),
                 child: ClipOval(
                   child: Image.asset(
                     null == userInfo.iconPath ? "" : userInfo.iconPath,
@@ -210,31 +209,45 @@ class _PersonalPageState extends State<PersonalPage> {
               ),
               Container(
                 padding: EdgeInsets.only(
-                  top: 15.0,
+                  left: 15.0,
                 ),
                 child: Text(
                   null == userInfo.name ? "" : userInfo.name,
                   style: TextStyle(
-                      fontSize: 18.0,
+                      fontSize: 20.0,
                       color: Colors.black,
                       fontWeight: FontWeight.w500),
+                ),
+              ),
+              Expanded(
+                child: Container(
+                  width: (null == userInfo.infoContent ||
+                          "" == userInfo.infoContent)
+                      ? 15.0
+                      : null,
                 ),
               ),
               Container(
                 padding: EdgeInsets.only(
-                  top: 15.0,
+                  right: 15.0,
                 ),
                 child: Text(
                   null == userInfo.infoContent ? "" : userInfo.infoContent,
                   style: TextStyle(
-                      fontSize: 18.0,
-                      color: Colors.black,
-                      fontWeight: FontWeight.w500),
+                    fontSize: 15.0,
+                    color: Colors.grey,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
             ],
           ),
-        ));
+        ),
+        onTap: () {
+          print("onTap: ${userInfo.name ?? "card"}");
+        },
+      ),
+    );
   }
 
   /// 方框阴影
@@ -250,7 +263,7 @@ class _PersonalPageState extends State<PersonalPage> {
       ),
       decoration: BoxDecoration(
           color: Color(0xCCFFFFFF),
-          borderRadius: BorderRadius.all(Radius.circular(24)),
+          borderRadius: BorderRadius.all(Radius.circular(8)),
           boxShadow: [
             //refer to :https://ninghao.net/video/6443
             BoxShadow(
