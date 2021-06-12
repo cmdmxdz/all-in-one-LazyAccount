@@ -1,6 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:lazy_account/view/model/time_line_data.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:lazy_account/model/time_line_data.dart';
+import 'package:lazy_account/view/custom/calendar/month_week_calendar.dart';
+import 'package:lazy_account/view/custom/calendar/scroll_month_calendar.dart';
 import 'package:lazy_account/view/widget/flutter_time_axis.dart';
 
 /// 记账页
@@ -15,8 +18,12 @@ class RecordPage extends StatefulWidget {
   _RecordPageState createState() => _RecordPageState();
 }
 
-class _RecordPageState extends State<RecordPage> {
+class _RecordPageState extends State<RecordPage>
+    with SingleTickerProviderStateMixin {
   var currentPage;
+
+  TabController _tabController;
+  var tabs = ["收缩日历", "周月日历"];
 
   var mData = <TimeLineData>[];
 
@@ -24,6 +31,10 @@ class _RecordPageState extends State<RecordPage> {
   void initState() {
     super.initState();
     currentPage = RecordPage.RECORD_PAGE;
+
+    if (null == _tabController) {
+      _tabController = new TabController(vsync: this, length: tabs.length);
+    }
   }
 
   @override
@@ -53,6 +64,11 @@ class _RecordPageState extends State<RecordPage> {
 
   @override
   Widget build(BuildContext context) {
+    ScreenUtil.init(
+      BoxConstraints(),
+      orientation: Orientation.portrait,
+      designSize: Size(375, 667),
+    );
     _initData();
 
     return Scaffold(
@@ -69,7 +85,8 @@ class _RecordPageState extends State<RecordPage> {
               ),
             ),
             Container(
-              child: calendar,
+              height: 500,
+              child: _getCalendar(context),
             ),
             Container(
               margin: EdgeInsets.only(
@@ -161,6 +178,39 @@ class _RecordPageState extends State<RecordPage> {
     ),
   );
 
+  Widget _getCalendar(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 20),
+      decoration: BoxDecoration(
+        border: Border.all(
+          width: 3,
+          color: Colors.deepOrange,
+        ),
+      ),
+      alignment: Alignment.center,
+      child: Column(
+        children: <Widget>[
+          Container(
+              padding: EdgeInsets.fromLTRB(18, 0, 18, 0),
+              margin: EdgeInsets.only(bottom: 10),
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  border:
+                      Border(bottom: BorderSide(width: 1, color: Colors.white)),
+                  boxShadow: [
+                    BoxShadow(
+                        offset: Offset(0, 0),
+                        color: Color.fromARGB(10, 0, 0, 0),
+                        blurRadius: 2.0,
+                        spreadRadius: 4.0)
+                  ]),
+              child: _tabBarTitle()),
+          Expanded(child: _tabBarView(context)),
+        ],
+      ),
+    );
+  }
+
   Widget calendar = Container(
     height: 100,
     margin: EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 20),
@@ -173,4 +223,39 @@ class _RecordPageState extends State<RecordPage> {
     alignment: Alignment.center,
     child: Text("日历"),
   );
+
+  Widget _tabBarTitle() {
+    return Container(
+        child: TabBar(
+            controller: _tabController,
+            indicatorSize: TabBarIndicatorSize.label,
+            labelColor: Colors.blue,
+            labelStyle: TextStyle(
+              fontSize: 16,
+            ),
+            indicatorWeight: 2,
+            unselectedLabelColor: Colors.grey,
+            tabs: tabs.map((tab) {
+              return Tab(
+                key: Key(tab),
+                text: tab,
+              );
+            }).toList()));
+  }
+
+  Widget _tabBarView(BuildContext context) {
+    return TabBarView(
+        controller: _tabController,
+        // ignore: missing_return
+        children: tabs.map((tab) {
+          switch (tab) {
+            case "收缩日历":
+              return ScrollMonthCalendar(
+                context: context,
+              );
+            case "周月日历":
+              return MonthWeekCalendar();
+          }
+        }).toList());
+  }
 }
