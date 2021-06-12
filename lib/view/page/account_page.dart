@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:lazy_account/view/model/account.dart';
+import 'package:lazy_account/model/account.dart';
 
 /// 账户页
 class AccountPage extends StatefulWidget {
@@ -17,6 +17,7 @@ class AccountPage extends StatefulWidget {
 class _AccountPageState extends State<AccountPage> {
   var currentPage;
 
+  /// 账号信息
   var accountList = <Account>[];
 
   @override
@@ -54,8 +55,7 @@ class _AccountPageState extends State<AccountPage> {
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
                 itemBuilder: (BuildContext context, int index) {
-                  return _getAccountSubWidget(
-                      context, index, accountList[index]);
+                  return _getAccountSubWidget(context, accountList[index]);
                 },
                 separatorBuilder: (context, index) => Container(
                       height: 30,
@@ -71,36 +71,93 @@ class _AccountPageState extends State<AccountPage> {
   }
 
   /// second-day-主要活动时间段控件
-  Widget _getAccountSubWidget(
-      BuildContext context, int index, Account account) {
+  Widget _getAccountSubWidget(BuildContext context, Account account) {
     return _getShadowWidget(
-        null,
-        0.toDouble(),
-        0.toDouble(),
-        30.toDouble(),
-        30.toDouble(),
-        Container(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+      null,
+      0.toDouble(),
+      0.toDouble(),
+      30.toDouble(),
+      30.toDouble(),
+      InkWell(
+        child: Container(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Container(
-                height: 50,
                 margin: EdgeInsets.only(
-                  left: 30,
-                  top: 30,
-                  bottom: 30,
+                  left: 10,
+                  top: 10,
+                  bottom: 10,
+                ),
+                child: Image.asset(
+                  "images/icon_help.png",
+                  width: 40,
+                  height: 40,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.only(
+                  left: 10,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      // height: 50,
+                      margin: EdgeInsets.only(
+                        top: 20,
+                        bottom: 10,
+                      ),
+                      alignment: Alignment.topLeft,
+                      child: Text(
+                        account.name ?? "",
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.orangeAccent,
+                        ),
+                      ),
+                    ),
+                    Container(
+                      // height: 50,
+                      margin: EdgeInsets.only(
+                        bottom: 20,
+                      ),
+                      alignment: Alignment.topLeft,
+                      child: Text(
+                        account.content ?? "",
+                        style: TextStyle(
+                          color: Colors.orangeAccent,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(child: Container()),
+              Container(
+                // height: 50,
+                margin: EdgeInsets.only(
+                  right: 30,
                 ),
                 alignment: Alignment.topLeft,
                 child: Text(
-                  account.name,
+                  account.moneyNum.toString() ?? "",
                   style: TextStyle(
+                    fontSize: 20,
                     color: Colors.orangeAccent,
                   ),
                 ),
               ),
             ],
           ),
-        ));
+        ),
+        onTap: () {
+          print("onTap: ${account.name ?? "account"}");
+        },
+      ),
+    );
   }
 
   /// 方框阴影
